@@ -1,0 +1,16 @@
+ADFActivityRun
+| where Status == "Failed"
+| join kind=inner (
+    ADFPipelineRun
+    | where Status == "Failed"
+    | project PipelineRunId = RunId, PipelineName, PipelineStart = Start, PipelineEnd = End
+) on PipelineRunId
+| project TimeGenerated = PipelineEnd,
+          PipelineName,
+          ActivityName,
+          FailureType,
+          Error,
+          ActivityRunStart = Start,
+          ActivityRunEnd = End,
+          PipelineStart,
+          PipelineEnd

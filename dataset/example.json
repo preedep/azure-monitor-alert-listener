@@ -1,0 +1,54 @@
+{
+  "data": {
+    "alertContext": {
+      "condition": {
+        "allOf": [
+          {
+            "dimensions": [],
+            "metricName": "PipelineFailedRuns",
+            "metricNamespace": "Microsoft.DataFactory/factories",
+            "metricValue": 1.0,
+            "operator": "GreaterThanOrEqual",
+            "threshold": "1",
+            "timeAggregation": "Count",
+            "webTestName": null
+          }
+        ],
+        "staticThresholdFailingPeriods": {
+          "minFailingPeriodsToAlert": 0,
+          "numberOfEvaluationPeriods": 0
+        },
+        "windowEndTime": "2025-03-27T16:01:39.617Z",
+        "windowSize": "PT5M",
+        "windowStartTime": "2025-03-27T15:56:39.617Z"
+      },
+      "conditionType": "SingleResourceMultipleMetricCriteria",
+      "properties": null
+    },
+    "customProperties": null,
+    "essentials": {
+      "alertContextVersion": "1.0",
+      "alertId": "/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/providers/Microsoft.AlertsManagement/alerts/14496397-27a7-4240-b4f1-c847833bf000",
+      "alertRule": "alert-adf-rule-001",
+      "alertRuleID": "/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/resourceGroups/RG-SG-NICKDEV001/providers/microsoft.insights/metricAlerts/alert-adf-rule-001",
+      "alertTargetIDs": [
+        "/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/resourcegroups/rg-sg-nickdev001/providers/microsoft.datafactory/factories/mynickadf001"
+      ],
+      "configurationItems": [
+        "mynickadf001"
+      ],
+      "description": "",
+      "essentialsVersion": "1.0",
+      "firedDateTime": "2025-03-27T16:03:50.7439969Z",
+      "investigationLink": "https://portal.azure.com/#view/Microsoft_Azure_Monitoring_Alerts/Investigation.ReactView/alertId/%2fsubscriptions%2f9d3ff024-cfad-4108-a098-8e675fbc4cc4%2fresourceGroups%2frg-sg-nickdev001%2fproviders%2fMicrosoft.AlertsManagement%2falerts%2f14496397-27a7-4240-b4f1-c847833bf000",
+      "monitorCondition": "Fired",
+      "monitoringService": "Platform",
+      "originAlertId": "9d3ff024-cfad-4108-a098-8e675fbc4cc4_RG-SG-NICKDEV001_microsoft.insights_metricAlerts_alert-adf-rule-001_1132173113",
+      "severity": "Sev3",
+      "signalType": "Metric",
+      "targetResourceGroup": "rg-sg-nickdev001",
+      "targetResourceType": "microsoft.datafactory/factories"
+    }
+  },
+  "schemaId": "azureMonitorCommonAlertSchema"
+}
