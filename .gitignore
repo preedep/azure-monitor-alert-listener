@@ -22,3 +22,7 @@ target/
 /Cargo.lock
 /.idea/material_theme_project_new.xml
 /.idea/.gitignore
+/.env
+/.idea/azure-monitor-alert-listener.iml
+/.idea/modules.xml
+/.idea/vcs.xml
