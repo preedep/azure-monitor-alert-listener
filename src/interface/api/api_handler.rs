@@ -1,11 +1,13 @@
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{HttpResponse, Responder, post, web};
 use log::{debug, info};
 use serde_json::Value;
 
 #[post("/alert")]
 pub async fn receive_alert(payload: web::Json<Value>) -> impl Responder {
-
-    debug!("📦 Raw JSON Payload:\n{}", serde_json::to_string_pretty(&payload).unwrap());
+    debug!(
+        "📦 Raw JSON Payload:\n{}",
+        serde_json::to_string_pretty(&payload).unwrap()
+    );
 
     // ลอง extract field แบบ safe (optional)
     if let Some(schema_id) = payload.get("schemaId") {
