@@ -23,6 +23,9 @@ RUN apk add --no-cache libssl3
 # คัดลอก binary จาก builder stage
 COPY --from=builder /app/target/release/azure-monitor-alert-listener /usr/local/bin/app
 
+COPY template ./template
+
+
 ENV RUST_LOG=info
 ENV PORT=8888
 # ระบุ entrypoint
