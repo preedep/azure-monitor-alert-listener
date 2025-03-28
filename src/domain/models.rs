@@ -139,3 +139,33 @@ pub struct FailingPeriods {
     #[serde(rename = "numberOfEvaluationPeriods")]
     pub number_of_evaluation_periods: u32,
 }
+
+use actix_web::web;
+use serde_json::Value;
+use std::convert::TryFrom;
+use thiserror::Error;
+use crate::models::AzureMonitorAlert;
+
+#[derive(Debug, Error)]
+pub enum AlertParseError {
+    #[error("Invalid alert payload: {0}")]
+    InvalidPayload(#[from] serde_json::Error),
+}
+
+impl TryFrom<web::Json<Value>> for AzureMonitorAlert {
+    type Error = AlertParseError;
+
+    fn try_from(value: web::Json<Value>) -> Result<Self, Self::Error> {
+        let alert = serde_json::from_value(value.into_inner())?;
+        Ok(alert)
+    }
+}
+
+impl Into<web::Json<Value>> for AzureMonitorAlert {
+    fn into(self) -> web::Json<Value> {
+        match serde_json::to_value(self) {
+            Ok(v) => web::Json(v),
+            Err(_) => web::Json(json!({ "error": "Failed to serialize alert" })),
+        }
+    }
+}

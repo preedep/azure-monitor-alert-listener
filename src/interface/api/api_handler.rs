@@ -1,6 +1,7 @@
 use actix_web::{HttpResponse, Responder, post, web};
 use log::{debug, info};
 use serde_json::Value;
+use crate::domain::models::AzureMonitorAlert;
 
 #[post("/alert")]
 pub async fn receive_alert(payload: web::Json<Value>) -> impl Responder {
@@ -8,22 +9,14 @@ pub async fn receive_alert(payload: web::Json<Value>) -> impl Responder {
         "📦 Raw JSON Payload:\n{}",
         serde_json::to_string_pretty(&payload).unwrap()
     );
-
-    // ลอง extract field แบบ safe (optional)
-    if let Some(schema_id) = payload.get("schemaId") {
-        info!("🔍 schemaId: {}", schema_id);
-    }
-
-    if let Some(data) = payload.get("data") {
-        if let Some(essentials) = data.get("essentials") {
-            if let Some(alert_rule) = essentials.get("alertRule") {
-                info!("🚨 Alert Rule: {}", alert_rule);
-            }
-            if let Some(severity) = essentials.get("severity") {
-                info!("⚠️ Severity: {}", severity);
-            }
+    match AzureMonitorAlert::try_from(payload) {
+        Ok(alert) => {
+            //debug!("✅ Got alert: {:?}", alert.data.essentials.alert_rule);
+            debug!("Alert payload: {:#?}", alert);
+            HttpResponse::Ok().finish()
+        }
+        Err(e) => {
+            HttpResponse::BadRequest().body(format!("❌ Parse error: {}", e))
         }
     }
-
-    HttpResponse::Ok().finish()
 }

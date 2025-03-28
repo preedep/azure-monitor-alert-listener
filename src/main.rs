@@ -1,4 +1,5 @@
 mod interface;
+mod domain;
 
 use actix_web::HttpServer;
 use log::info;
