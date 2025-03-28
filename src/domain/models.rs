@@ -141,10 +141,9 @@ pub struct FailingPeriods {
 }
 
 use actix_web::web;
-use serde_json::Value;
+use serde_json::{json, Value};
 use std::convert::TryFrom;
 use thiserror::Error;
-use crate::models::AzureMonitorAlert;
 
 #[derive(Debug, Error)]
 pub enum AlertParseError {

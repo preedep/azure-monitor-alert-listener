@@ -1,5 +1,5 @@
 use actix_web::{HttpResponse, Responder, post, web};
-use log::{debug, info};
+use log::{debug};
 use serde_json::Value;
 use crate::domain::models::AzureMonitorAlert;
 
