@@ -18,6 +18,7 @@ pub async fn receive_alert(payload: web::Json<Value>) -> impl Responder {
             match ret {
                 Ok(html) => {
                     debug!("📧 Email HTML:\n{}", html);
+
                 }
                 Err(e) => {
                     error!("❌ Error rendering email: {}", e);
