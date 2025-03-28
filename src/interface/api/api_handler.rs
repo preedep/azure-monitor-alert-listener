@@ -1,7 +1,7 @@
-use actix_web::{HttpResponse, Responder, post, web};
-use log::{debug};
-use serde_json::Value;
 use crate::domain::models::AzureMonitorAlert;
+use actix_web::{post, web, HttpResponse, Responder};
+use log::debug;
+use serde_json::Value;
 
 #[post("/alert")]
 pub async fn receive_alert(payload: web::Json<Value>) -> impl Responder {
@@ -15,8 +15,6 @@ pub async fn receive_alert(payload: web::Json<Value>) -> impl Responder {
             debug!("Alert payload: {:#?}", alert);
             HttpResponse::Ok().finish()
         }
-        Err(e) => {
-            HttpResponse::BadRequest().body(format!("❌ Parse error: {}", e))
-        }
+        Err(e) => HttpResponse::BadRequest().body(format!("❌ Parse error: {}", e)),
     }
 }
