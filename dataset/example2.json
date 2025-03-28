@@ -1,0 +1,59 @@
+{
+  "data": {
+    "alertContext": {
+      "condition": {
+        "allOf": [
+          {
+            "dimensions": [],
+            "event": null,
+            "failingPeriods": {
+              "minFailingPeriodsToAlert": 1,
+              "numberOfEvaluationPeriods": 1
+            },
+            "linkToFilteredSearchResultsAPI": "https://api.loganalytics.io/v1/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/resourceGroups/RG-SG-NICKDEV001/providers/Microsoft.DataFactory/factories/MyNICKADF001/query?query=ADFActivityRun%0A%7C%20where%20Status%20%3D%3D%20%22Failed%22%0A%7C%20join%20kind%3Dinner%20%28%0A%20%20%20%20ADFPipelineRun%0A%20%20%20%20%7C%20where%20Status%20%3D%3D%20%22Failed%22%0A%20%20%20%20%7C%20project%20PipelineRunId%20%3D%20RunId%2C%20PipelineName%2C%20PipelineStart%20%3D%20Start%2C%20PipelineEnd%20%3D%20End%0A%29%20on%20PipelineRunId%0A%7C%20project%20TimeGenerated%20%3D%20PipelineEnd%2C%0A%20%20%20%20%20%20%20%20%20%20PipelineName%2C%0A%20%20%20%20%20%20%20%20%20%20ActivityName%2C%0A%20%20%20%20%20%20%20%20%20%20FailureType%2C%0A%20%20%20%20%20%20%20%20%20%20Error%2C%0A%20%20%20%20%20%20%20%20%20%20ActivityRunStart%20%3D%20Start%2C%0A%20%20%20%20%20%20%20%20%20%20ActivityRunEnd%20%3D%20End%2C%0A%20%20%20%20%20%20%20%20%20%20PipelineStart%2C%0A%20%20%20%20%20%20%20%20%20%20PipelineEnd&timespan=2025-03-27T16%3a26%3a58.0000000Z%2f2025-03-27T16%3a31%3a58.0000000Z",
+            "linkToFilteredSearchResultsUI": "https://portal.azure.com#@5612aad0-a1b7-4391-87a7-389e38e63b73/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F9d3ff024-cfad-4108-a098-8e675fbc4cc4%2FresourceGroups%2FRG-SG-NICKDEV001%2Fproviders%2FMicrosoft.DataFactory%2Ffactories%2FMyNICKADF001%22%7D%5D%7D/q/eJx9UEEOgjAQvPOKDSdN%2BAIHEsB4MUb5QAObuAgtWYuGxMfbQoBWiT1009md2ZkmaZ6Ump6kh0svgze8bsgIVy10%2F4A4hjAX1GAVmlatSMKdZBWTlMiwC8CcJM3P1GFDEq2Chf6oTO2OVY2lBod4rCCGsUYLfBItri%2BjxtoMjXWFM2mZ5g72oKQvaUzPqwpq8YDGttBoCQ49Gl1Nx1vt4PMnfeM2V89YDJ0HZ8yKt%2FjGlp9je2YJteXth%2Bhk%2BQA%3D/prettify/1/timespan/2025-03-27T16%3a26%3a58.0000000Z%2f2025-03-27T16%3a31%3a58.0000000Z",
+            "linkToSearchResultsAPI": "https://api.loganalytics.io/v1/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/resourceGroups/RG-SG-NICKDEV001/providers/Microsoft.DataFactory/factories/MyNICKADF001/query?query=ADFActivityRun%0A%7C%20where%20Status%20%3D%3D%20%22Failed%22%0A%7C%20join%20kind%3Dinner%20%28%0A%20%20%20%20ADFPipelineRun%0A%20%20%20%20%7C%20where%20Status%20%3D%3D%20%22Failed%22%0A%20%20%20%20%7C%20project%20PipelineRunId%20%3D%20RunId%2C%20PipelineName%2C%20PipelineStart%20%3D%20Start%2C%20PipelineEnd%20%3D%20End%0A%29%20on%20PipelineRunId%0A%7C%20project%20TimeGenerated%20%3D%20PipelineEnd%2C%0A%20%20%20%20%20%20%20%20%20%20PipelineName%2C%0A%20%20%20%20%20%20%20%20%20%20ActivityName%2C%0A%20%20%20%20%20%20%20%20%20%20FailureType%2C%0A%20%20%20%20%20%20%20%20%20%20Error%2C%0A%20%20%20%20%20%20%20%20%20%20ActivityRunStart%20%3D%20Start%2C%0A%20%20%20%20%20%20%20%20%20%20ActivityRunEnd%20%3D%20End%2C%0A%20%20%20%20%20%20%20%20%20%20PipelineStart%2C%0A%20%20%20%20%20%20%20%20%20%20PipelineEnd&timespan=2025-03-27T16%3a26%3a58.0000000Z%2f2025-03-27T16%3a31%3a58.0000000Z",
+            "linkToSearchResultsUI": "https://portal.azure.com#@5612aad0-a1b7-4391-87a7-389e38e63b73/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F9d3ff024-cfad-4108-a098-8e675fbc4cc4%2FresourceGroups%2FRG-SG-NICKDEV001%2Fproviders%2FMicrosoft.DataFactory%2Ffactories%2FMyNICKADF001%22%7D%5D%7D/q/eJx9UEEOgjAQvPOKDSdN%2BAIHEsB4MUb5QAObuAgtWYuGxMfbQoBWiT1009md2ZkmaZ6Ump6kh0svgze8bsgIVy10%2F4A4hjAX1GAVmlatSMKdZBWTlMiwC8CcJM3P1GFDEq2Chf6oTO2OVY2lBod4rCCGsUYLfBItri%2BjxtoMjXWFM2mZ5g72oKQvaUzPqwpq8YDGttBoCQ49Gl1Nx1vt4PMnfeM2V89YDJ0HZ8yKt%2FjGlp9je2YJteXth%2Bhk%2BQA%3D/prettify/1/timespan/2025-03-27T16%3a26%3a58.0000000Z%2f2025-03-27T16%3a31%3a58.0000000Z",
+            "metricMeasureColumn": null,
+            "metricValue": 4.0,
+            "operator": "GreaterThan",
+            "searchQuery": "ADFActivityRun\n| where Status == \"Failed\"\n| join kind=inner (\n    ADFPipelineRun\n    | where Status == \"Failed\"\n    | project PipelineRunId = RunId, PipelineName, PipelineStart = Start, PipelineEnd = End\n) on PipelineRunId\n| project TimeGenerated = PipelineEnd,\n          PipelineName,\n          ActivityName,\n          FailureType,\n          Error,\n          ActivityRunStart = Start,\n          ActivityRunEnd = End,\n          PipelineStart,\n          PipelineEnd\n",
+            "targetResourceTypes": "['Microsoft.DataFactory/factories']",
+            "threshold": "1",
+            "timeAggregation": "Count"
+          }
+        ],
+        "windowEndTime": "2025-03-27T16:31:58Z",
+        "windowSize": "PT5M",
+        "windowStartTime": "2025-03-27T16:26:58Z"
+      },
+      "conditionType": "LogQueryCriteria",
+      "properties": {}
+    },
+    "customProperties": {},
+    "essentials": {
+      "alertContextVersion": "1.0",
+      "alertId": "/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/providers/Microsoft.AlertsManagement/alerts/37e55fc9-1dbb-9ca3-10c2-f6214b3d001d",
+      "alertRule": "alert-adf-rule-002",
+      "alertRuleID": "/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/resourceGroups/RG-SG-NICKDEV001/providers/microsoft.insights/scheduledqueryrules/alert-adf-rule-002",
+      "alertTargetIDs": [
+        "/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/resourcegroups/rg-sg-nickdev001/providers/microsoft.datafactory/factories/mynickadf001"
+      ],
+      "configurationItems": [
+        "/subscriptions/9d3ff024-cfad-4108-a098-8e675fbc4cc4/resourceGroups/RG-SG-NICKDEV001/providers/Microsoft.DataFactory/factories/MyNICKADF001"
+      ],
+      "description": "",
+      "essentialsVersion": "1.0",
+      "firedDateTime": "2025-03-27T16:32:34.6120857Z",
+      "investigationLink": "https://portal.azure.com/#view/Microsoft_Azure_Monitoring_Alerts/Investigation.ReactView/alertId/%2fsubscriptions%2f9d3ff024-cfad-4108-a098-8e675fbc4cc4%2fresourceGroups%2frg-sg-nickdev001%2fproviders%2fMicrosoft.AlertsManagement%2falerts%2f37e55fc9-1dbb-9ca3-10c2-f6214b3d001d",
+      "monitorCondition": "Fired",
+      "monitoringService": "Log Alerts V2",
+      "originAlertId": "67c17dc5-526c-40c0-b428-a21368630518",
+      "severity": "Sev3",
+      "signalType": "Log",
+      "targetResourceGroup": "rg-sg-nickdev001",
+      "targetResourceType": "microsoft.datafactory/factories"
+    }
+  },
+  "schemaId": "azureMonitorCommonAlertSchema"
+}
