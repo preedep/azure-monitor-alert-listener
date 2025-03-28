@@ -24,7 +24,6 @@ FROM alpine:latest
 
 # ติดตั้ง lib ที่จำเป็นสำหรับรัน binary เช่น openssl
 RUN apk add --no-cache libssl3
-RUN apk add --no-cache bind-tools curl
 RUN apk add --no-cache ca-certificates
 
 # คัดลอก binary จาก builder stage
@@ -32,8 +31,7 @@ COPY --from=builder /app/target/release/azure-monitor-alert-listener /usr/local/
 
 COPY template ./template
 
-
-# ✅ อัปเดต trust store
+COPY nickcsdev003.crt /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
 ENV RUST_LOG=info
