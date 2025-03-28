@@ -2,7 +2,12 @@
 FROM rust:1.85-alpine AS builder
 
 # ติดตั้ง dependency สำหรับ build (musl + openssl + build tools)
-RUN apk add --no-cache musl-dev openssl-dev build-base pkgconf
+RUN apk add --no-cache \
+    musl-dev \
+    openssl-dev \
+    openssl-libs-static \
+    build-base \
+    pkgconf
 
 # Set workdir
 WORKDIR /app
