@@ -32,6 +32,15 @@ This project was built to:
 3. The app parses the JSON and logs / processes it
 4. (Optional) Alert content is rendered into HTML or forwarded elsewhere
 
+```mermaid
+flowchart LR
+    A[Azure Monitor Alert] --> B[Webhook Endpoint (/alert)]
+    B --> C[Parse JSON (AzureMonitorAlert)]
+    C --> D[Render HTML (Tera Template)]
+    D --> E[Send Email via Azure Communication Service]
+```
+
+
 ## 🔧 How to Run
 
 ```bash
