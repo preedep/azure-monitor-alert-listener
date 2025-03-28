@@ -34,10 +34,13 @@ This project was built to:
 
 ```mermaid
 flowchart LR
-    A[Azure Monitor Alert] --> B[Webhook Endpoint (/alert)]
-    B --> C[Parse JSON (AzureMonitorAlert)]
-    C --> D[Render HTML (Tera Template)]
-    D --> E[Send Email via Azure Communication Service]
+    A[Azure Monitor Alert]
+    B[Webhook Endpoint alert]
+    C[Parse JSON AzureMonitorAlert]
+    D[Render HTML Tera Template]
+    E[Send Email via Azure Communication Service]
+
+    A --> B --> C --> D --> E
 ```
 
 
