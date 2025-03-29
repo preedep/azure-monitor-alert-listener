@@ -172,3 +172,36 @@ impl Into<web::Json<Value>> for AzureMonitorAlert {
         }
     }
 }
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogAnalyticsResponse {
+    pub tables: Vec<LogAnalyticsTable>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogAnalyticsTable {
+    pub name: String,
+    pub columns: Vec<LogAnalyticsColumn>,
+    pub rows: Vec<Vec<serde_json::Value>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogAnalyticsColumn {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub column_type: String,
+}
+
+impl LogAnalyticsTable {
+    pub fn get_by_column_name<'a>(
+        &'a self,
+        row: &'a Vec<Value>,
+        column_name: &str,
+    ) -> Option<&'a Value> {
+        self.columns
+            .iter()
+            .position(|c| c.name == column_name)
+            .and_then(|index| row.get(index))
+    }
+}

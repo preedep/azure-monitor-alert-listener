@@ -1,7 +1,7 @@
 #!/bin/bash
 
 URL="http://localhost:8888/alert"
-JSON_FILE="dataset/example1.json"
+JSON_FILE="dataset/example3.json"
 
 if [ ! -f "$JSON_FILE" ]; then
   echo "❌ JSON file '$JSON_FILE' not found!"
