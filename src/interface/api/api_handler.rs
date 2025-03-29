@@ -11,7 +11,7 @@ use crate::interface::state::AppState;
 pub async fn receive_alert(app_state: web::Data<AppState>, payload: web::Json<Value>) -> impl Responder {
     debug!("📦 Raw JSON Payload:\n{}", serde_json::to_string_pretty(&payload).unwrap());
 
-    let alert = match AzureMonitorAlert::try_from(payload) {
+    let mut alert = match AzureMonitorAlert::try_from(payload) {
         Ok(alert) => alert,
         Err(e) => return HttpResponse::BadRequest().body(format!("❌ Parse error: {}", e)),
     };
@@ -19,7 +19,9 @@ pub async fn receive_alert(app_state: web::Data<AppState>, payload: web::Json<Va
     let app_state_ref = app_state.get_ref();
 
     if let Some(alert_context) = &alert.data.alert_context {
-        process_alert(app_state_ref, alert_context).await;
+        let r  = process_alert(app_state_ref, alert_context).await;
+        alert.data.pipeline_name = Some(r.0);
+        alert.data.message = Some(r.1);
     } else {
         debug!("No alert context present in payload.");
     }
@@ -32,7 +34,7 @@ pub async fn receive_alert(app_state: web::Data<AppState>, payload: web::Json<Va
     HttpResponse::Ok().finish()
 }
 
-async fn process_alert(app_state_ref: &AppState, alert_context: &AlertContext) {
+async fn process_alert(app_state_ref: &AppState, alert_context: &AlertContext) -> (String, String) {
     if let Some(first_condition) = alert_context
         .condition
         .all_of
@@ -60,14 +62,19 @@ async fn process_alert(app_state_ref: &AppState, alert_context: &AlertContext) {
             )
                 .await
             {
-                Ok(log_response) => process_log_condition(log_response),
-                Err(e) => error!("❌ Error querying Log Analytics: {}", e),
+                Ok(log_response) => {
+                    return process_log_condition(log_response);
+                },
+                Err(e) => {
+                    error!("❌ Error querying Log Analytics: {}", e)
+                },
             }
         }
     }
+    (String::new(), String::new())
 }
 
-fn process_log_condition(log_response: LogAnalyticsResponse) {
+fn process_log_condition(log_response: LogAnalyticsResponse) -> (String, String) {
     let mut pipeline_names = Vec::new();
     let mut error_messages = Vec::new();
 
@@ -79,7 +86,6 @@ fn process_log_condition(log_response: LogAnalyticsResponse) {
             {
                 pipeline_names.push(pipeline_name.to_string());
             }
-
             if let Some(error_message) = table
                 .get_by_column_name(row, "ConcatenatedErrors")
                 .and_then(|v| v.as_str())
@@ -88,9 +94,10 @@ fn process_log_condition(log_response: LogAnalyticsResponse) {
             }
         }
     }
+    let pipeline_names = pipeline_names.join(", ");
+    let error_messages = error_messages.join(", ");
 
-    debug!("Pipelines: {:?}", pipeline_names.join(", "));
-    debug!("Errors: {:?}", error_messages.join(", "));
+    (pipeline_names, error_messages)
 }
 
 async fn render_and_send_email(app_state_ref: &AppState, alert: &AzureMonitorAlert) -> Result<(), String> {

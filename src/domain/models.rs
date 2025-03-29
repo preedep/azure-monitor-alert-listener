@@ -20,6 +20,7 @@ pub struct AlertData {
     pub alert_context: Option<AlertContext>,
     #[serde(rename = "message")]
     pub message: Option<String>,
+    pub pipeline_name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
