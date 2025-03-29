@@ -1,6 +1,18 @@
+use serde_json::Value;
 use tera::{Context, Tera};
 use crate::domain::models::AzureMonitorAlert;
 
+fn prettify_json_array(raw: &str) -> String {
+    let json_array: Result<Vec<Value>, _> = serde_json::from_str(raw);
+    match json_array {
+        Ok(arr) => arr
+            .iter()
+            .map(|v| serde_json::to_string_pretty(v).unwrap_or_default())
+            .collect::<Vec<_>>()
+            .join("\n\n"),
+        Err(_) => raw.to_string(),
+    }
+}
 pub fn render_alert_email(
     template_dir: &str,
     template_name: &str,
@@ -48,7 +60,8 @@ pub fn render_alert_email(
     context.insert("adf_name", adf_name);
     context.insert("pipeline_name", pipeline_name);
     context.insert("execution_time", execution_time);
-    context.insert("error_message", &error_message);
+    let formatted_error = prettify_json_array(&error_message);
+    context.insert("error_message", &formatted_error);
 
     // Render
     let html = tera.render(template_name, &context)?;
