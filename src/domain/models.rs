@@ -5,6 +5,8 @@ pub struct AzureMonitorAlert {
     #[serde(rename = "schemaId")]
     pub schema_id: String,
     pub data: AlertData,
+    #[serde(rename = "appName")]
+    pub app_name: Option<String>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -16,6 +18,8 @@ pub struct AlertData {
     #[serde(default)]
     #[serde(rename = "alertContext")]
     pub alert_context: Option<AlertContext>,
+    #[serde(rename = "message")]
+    pub message: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

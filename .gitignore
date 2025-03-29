@@ -26,3 +26,4 @@ target/
 /.idea/azure-monitor-alert-listener.iml
 /.idea/modules.xml
 /.idea/vcs.xml
+/nickcsdev003.crt
