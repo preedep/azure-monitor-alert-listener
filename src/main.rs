@@ -1,6 +1,7 @@
 mod domain;
 mod interface;
 mod application;
+mod infrastructure;
 
 use actix_web::HttpServer;
 use log::info;

@@ -16,10 +16,12 @@ thiserror = "2"
 tera = "1.20"
 
 
-azure_core = {version = "0.21"}
-azure_identity = {version = "0.21"}
-reqwest = {version = "0.11",features = ["json"] }
+azure_core = {version = "0.21",default-features = false,features = ["enable_reqwest_rustls"]}
+azure_identity = {version = "0.21",default-features = false,features = ["enable_reqwest_rustls"]}
+reqwest = {version = "0.11" ,default-features = false, features = ["json","rustls-tls"] }
 url = "2.5"
+
+jsonwebtoken = "9.3"
 
 [profile.release]
 opt-level = "z"         # เล็กสุด ("z") หรือเร็วสุด ("3")
