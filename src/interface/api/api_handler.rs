@@ -1,11 +1,11 @@
-use actix_web::{post, web, HttpRequest, HttpResponse, Responder};
-use log::{debug, error};
-use serde_json::Value;
 use crate::application::log::log_analytic_query::query_log_link;
 use crate::application::mail::mail_sender::send_email_with_api;
 use crate::application::mail::template_render::render_alert_email;
 use crate::domain::models::{AlertContext, AzureMonitorAlert, LogAnalyticsResponse};
 use crate::interface::state::AppState;
+use actix_web::{HttpRequest, HttpResponse, Responder, post, web};
+use log::{debug, error, info};
+use serde_json::Value;
 
 /// Actix handler for the `/alert` route.
 #[post("/alert")]
@@ -22,8 +22,7 @@ pub async fn receive_alert_secure(
     req: HttpRequest,
     app_state: web::Data<AppState>,
     payload: web::Json<Value>,
-) -> HttpResponse{
-
+) -> HttpResponse {
     let auth_header = match req.headers().get("Authorization") {
         Some(h) => h.to_str().unwrap_or(""),
         None => return HttpResponse::Unauthorized().body("Missing Authorization header"),
@@ -36,14 +35,27 @@ pub async fn receive_alert_secure(
     let token = &auth_header[7..];
     debug!("Token received: {}", token);
 
-    handle_alert(app_state, payload).await
+    match app_state
+        .jwt_verifier
+        .verify(token, &app_state.tenant_id, "api://your-app-id-uri")
+        .await
+    {
+        Ok(claims) => {
+            info!("✅ Verified secure alert from aud: {}", claims.aud);
+            handle_alert(app_state, payload).await
+        }
+        Err(e) => {
+            error!("❌ Invalid JWT: {}", e);
+            HttpResponse::Unauthorized().body(format!("Invalid JWT: {}", e))
+        }
+    }
 }
 
-async fn handle_alert(
-    app_state: web::Data<AppState>,
-    payload: web::Json<Value>,
-) -> HttpResponse {
-    debug!("📦 Raw JSON Payload:\n{}", serde_json::to_string_pretty(&payload).unwrap());
+async fn handle_alert(app_state: web::Data<AppState>, payload: web::Json<Value>) -> HttpResponse {
+    debug!(
+        "📦 Raw JSON Payload:\n{}",
+        serde_json::to_string_pretty(&payload).unwrap()
+    );
 
     let mut alert = match AzureMonitorAlert::try_from(payload) {
         Ok(alert) => alert,
@@ -68,7 +80,6 @@ async fn handle_alert(
     HttpResponse::Ok().finish()
 }
 
-
 async fn process_alert(app_state_ref: &AppState, alert_context: &AlertContext) -> (String, String) {
     if let Some(first_condition) = alert_context
         .condition
@@ -83,8 +94,7 @@ async fn process_alert(app_state_ref: &AppState, alert_context: &AlertContext) -
 
             let timespan = format!(
                 "{}/{}",
-                alert_context.condition.window_start_time,
-                alert_context.condition.window_end_time
+                alert_context.condition.window_start_time, alert_context.condition.window_end_time
             );
 
             match query_log_link(
@@ -95,14 +105,14 @@ async fn process_alert(app_state_ref: &AppState, alert_context: &AlertContext) -
                 search_query,
                 &timespan,
             )
-                .await
+            .await
             {
                 Ok(log_response) => {
                     return process_log_condition(log_response);
-                },
+                }
                 Err(e) => {
                     error!("❌ Error querying Log Analytics: {}", e)
-                },
+                }
             }
         }
     }
@@ -135,7 +145,10 @@ fn process_log_condition(log_response: LogAnalyticsResponse) -> (String, String)
     (pipeline_names, error_messages)
 }
 
-async fn render_and_send_email(app_state_ref: &AppState, alert: &AzureMonitorAlert) -> Result<(), String> {
+async fn render_and_send_email(
+    app_state_ref: &AppState,
+    alert: &AzureMonitorAlert,
+) -> Result<(), String> {
     match render_alert_email("template/*", "mail_template.html", alert) {
         Ok(rendered_email) => {
             debug!("📧 Generated email HTML:\n{}", rendered_email);
@@ -151,11 +164,11 @@ async fn render_and_send_email(app_state_ref: &AppState, alert: &AzureMonitorAle
                 &alert.data.essentials.alert_rule,
                 &rendered_email,
             )
-                .await
-                .map_err(|e| {
-                    error!("❌ Error sending email: {}", e);
-                    format!("Error sending email: {}", e)
-                })
+            .await
+            .map_err(|e| {
+                error!("❌ Error sending email: {}", e);
+                format!("Error sending email: {}", e)
+            })
         }
         Err(e) => {
             error!("❌ Error rendering email: {}", e);

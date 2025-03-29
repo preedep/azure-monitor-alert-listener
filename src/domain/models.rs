@@ -6,7 +6,7 @@ pub struct AzureMonitorAlert {
     pub schema_id: String,
     pub data: AlertData,
     #[serde(rename = "appName")]
-    pub app_name: Option<String>
+    pub app_name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -146,7 +146,7 @@ pub struct FailingPeriods {
 }
 
 use actix_web::web;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::convert::TryFrom;
 use thiserror::Error;
 
@@ -173,7 +173,6 @@ impl Into<web::Json<Value>> for AzureMonitorAlert {
         }
     }
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LogAnalyticsResponse {

@@ -1,7 +1,7 @@
-use serde::{Deserialize, Serialize};
 use crate::infrastructure::auth::jwt::JwtVerifier;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug,Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppState {
     pub(crate) tenant_id: String,
     pub(crate) client_id: String,

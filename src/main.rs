@@ -1,11 +1,11 @@
-mod domain;
-mod interface;
 mod application;
+mod domain;
 mod infrastructure;
+mod interface;
 
+use crate::infrastructure::auth::jwt::JwtVerifier;
 use actix_web::HttpServer;
 use log::info;
-use crate::infrastructure::auth::jwt::JwtVerifier;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -23,7 +23,6 @@ async fn main() -> std::io::Result<()> {
     let reply_to = std::env::var("REPLY_EMAIL").expect("REPLY_TO must be set");
     let display_name = std::env::var("REPLY_EMAIL_DISPLAY").expect("DISPLAY_NAME must be set");
     let workspace_id = std::env::var("WORKSPACE_ID").expect("WORKSPACE_ID must be set");
-
 
     // 🔐 สร้าง verifier instance
     let jwt_verifier = JwtVerifier::new();
@@ -43,8 +42,7 @@ async fn main() -> std::io::Result<()> {
     let port: u16 = port.parse().unwrap();
     HttpServer::new(move || {
         actix_web::App::new()
-            .app_data(
-                actix_web::web::Data::new(state.clone()))
+            .app_data(actix_web::web::Data::new(state.clone()))
             .wrap(actix_web::middleware::Logger::default())
             .service(interface::api::api_handler::receive_alert)
             .service(interface::api::api_handler::receive_alert_secure)

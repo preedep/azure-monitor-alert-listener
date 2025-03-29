@@ -1,2 +1,2 @@
-pub mod mail;
 pub mod log;
+pub mod mail;

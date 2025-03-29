@@ -1,7 +1,8 @@
 use azure_ecs_rs::adapters::gateways::acs_email::ACSClientBuilder;
-use azure_ecs_rs::domain::entities::models::{EmailAddress, EmailContent, Recipients, SentEmailBuilder};
-use log::{debug,  info};
-
+use azure_ecs_rs::domain::entities::models::{
+    EmailAddress, EmailContent, Recipients, SentEmailBuilder,
+};
+use log::{debug, info};
 
 /// Sends an email using the ACS client.
 ///
@@ -31,11 +32,7 @@ pub async fn send_email_with_api(
     debug!("client_secret: {}", client_secret);
     let builder = ACSClientBuilder::new()
         .host(host_name.as_str())
-        .service_principal(
-            tenant_id,
-            client_id,
-            client_secret,
-        );
+        .service_principal(tenant_id, client_id, client_secret);
 
     let email_request = SentEmailBuilder::new()
         .sender(sender.to_owned())
@@ -57,10 +54,12 @@ pub async fn send_email_with_api(
 
     debug!("Email request: {:#?}", email_request);
 
-    let acs_client = builder
-        .build()?;
+    let acs_client = builder.build()?;
 
-    let resp_send_email = acs_client.send_email(&email_request).await.expect("Failed to send email");
+    let resp_send_email = acs_client
+        .send_email(&email_request)
+        .await
+        .expect("Failed to send email");
     debug!("Response: {:#?}", resp_send_email);
     Ok(())
 }

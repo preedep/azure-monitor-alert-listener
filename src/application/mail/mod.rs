@@ -1,2 +1,2 @@
-pub mod template_render;
 pub mod mail_sender;
+pub mod template_render;

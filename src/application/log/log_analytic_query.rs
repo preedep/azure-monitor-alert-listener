@@ -1,12 +1,12 @@
-use std::sync::Arc;
+use crate::domain::models::LogAnalyticsResponse;
 use azure_core::HttpClient;
-use azure_identity::ClientSecretCredential;
 use azure_core::auth::TokenCredential;
+use azure_identity::ClientSecretCredential;
 use log::{debug, error};
 use reqwest::Client;
 use serde_json::json;
+use std::sync::Arc;
 use url::Url;
-use crate::domain::models::LogAnalyticsResponse;
 
 // Adding a function to create a `HttpClient`
 fn create_http_client() -> Arc<dyn HttpClient> {
@@ -52,9 +52,9 @@ pub async fn query_log_link(
     debug!("URL: {}", url);
 
     let body = json!({
-         "query": kql_query,
-         "timespan": timespan,
-     });
+        "query": kql_query,
+        "timespan": timespan,
+    });
     debug!("Body: {}", body);
 
     let client = Client::new();

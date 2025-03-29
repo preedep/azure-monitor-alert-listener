@@ -1,6 +1,6 @@
+use crate::domain::models::AzureMonitorAlert;
 use serde_json::Value;
 use tera::{Context, Tera};
-use crate::domain::models::AzureMonitorAlert;
 
 fn prettify_json_array(raw: &str) -> String {
     let json_array: Result<Vec<Value>, _> = serde_json::from_str(raw);
@@ -40,12 +40,20 @@ pub fn render_alert_email(
         .last()
         .unwrap_or("-");
     let default_pipeline_name = String::from("-");
-    let pipeline_name = alert.data.pipeline_name.as_ref().unwrap_or(&default_pipeline_name);
+    let pipeline_name = alert
+        .data
+        .pipeline_name
+        .as_ref()
+        .unwrap_or(&default_pipeline_name);
 
     let execution_time = &essentials.fired_date_time;
 
     // Error message from alertContext -> condition -> allOf -> [0].search_query (or .message)
-    let mut error_message = alert.data.message.clone().unwrap_or_else(|| String::from("(no error message found)"));
+    let mut error_message = alert
+        .data
+        .message
+        .clone()
+        .unwrap_or_else(|| String::from("(no error message found)"));
 
     // Create Tera context
     let mut context = Context::new();

@@ -1,10 +1,10 @@
-use std::collections::HashMap;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
+use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode, decode_header};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use tokio::sync::RwLock;
+use std::collections::HashMap;
 use std::sync::Arc;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use tokio::sync::RwLock;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -21,7 +21,8 @@ pub struct JwtVerifier {
     cache: Arc<RwLock<HashMap<String, (u64, Vec<Jwk>)>>>, // Use timestamp instead of Instant, and skip serialization
     #[serde(skip)] // Exclude the client from serialization/deserialization
     client: Client,
-    #[serde(with = "humantime_serde")] // Serialize/deserialize Duration using human-readable format
+    #[serde(with = "humantime_serde")]
+    // Serialize/deserialize Duration using human-readable format
     ttl: Duration,
 }
 
@@ -75,7 +76,10 @@ impl JwtVerifier {
 
     async fn get_jwks(&self, tenant_id: &str) -> Result<Vec<Jwk>, String> {
         let mut map = self.cache.write().await;
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(); // Use a Unix timestamp
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs(); // Use a Unix timestamp
 
         // Use the Unix timestamp to compare
         if let Some((ts, jwks)) = map.get(tenant_id) {
