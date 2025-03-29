@@ -1,4 +1,4 @@
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{post, web, HttpRequest, HttpResponse, Responder};
 use log::{debug, error};
 use serde_json::Value;
 use crate::application::log::log_analytic_query::query_log_link;
@@ -12,23 +12,37 @@ use crate::interface::state::AppState;
 pub async fn receive_alert(
     app_state: web::Data<AppState>,
     payload: web::Json<Value>,
-) -> impl Responder {
+) -> HttpResponse {
     handle_alert(app_state, payload).await
 }
 
 /// Actix handler for the `/alert_secure` route.
 #[post("/alert_secure")]
 pub async fn receive_alert_secure(
+    req: HttpRequest,
     app_state: web::Data<AppState>,
     payload: web::Json<Value>,
-) -> impl Responder {
+) -> HttpResponse{
+
+    let auth_header = match req.headers().get("Authorization") {
+        Some(h) => h.to_str().unwrap_or(""),
+        None => return HttpResponse::Unauthorized().body("Missing Authorization header"),
+    };
+
+    if !auth_header.starts_with("Bearer ") {
+        return HttpResponse::Unauthorized().body("Invalid token format");
+    }
+
+    let token = &auth_header[7..];
+    debug!("Token received: {}", token);
+
     handle_alert(app_state, payload).await
 }
 
 async fn handle_alert(
     app_state: web::Data<AppState>,
     payload: web::Json<Value>,
-) -> impl Responder {
+) -> HttpResponse {
     debug!("📦 Raw JSON Payload:\n{}", serde_json::to_string_pretty(&payload).unwrap());
 
     let mut alert = match AzureMonitorAlert::try_from(payload) {
