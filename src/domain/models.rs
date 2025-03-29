@@ -20,6 +20,7 @@ pub struct AlertData {
     pub alert_context: Option<AlertContext>,
     #[serde(rename = "message")]
     pub message: Option<String>,
+    pub pipeline_name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -170,5 +171,38 @@ impl Into<web::Json<Value>> for AzureMonitorAlert {
             Ok(v) => web::Json(v),
             Err(_) => web::Json(json!({ "error": "Failed to serialize alert" })),
         }
+    }
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogAnalyticsResponse {
+    pub tables: Vec<LogAnalyticsTable>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogAnalyticsTable {
+    pub name: String,
+    pub columns: Vec<LogAnalyticsColumn>,
+    pub rows: Vec<Vec<serde_json::Value>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogAnalyticsColumn {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub column_type: String,
+}
+
+impl LogAnalyticsTable {
+    pub fn get_by_column_name<'a>(
+        &'a self,
+        row: &'a Vec<Value>,
+        column_name: &str,
+    ) -> Option<&'a Value> {
+        self.columns
+            .iter()
+            .position(|c| c.name == column_name)
+            .and_then(|index| row.get(index))
     }
 }

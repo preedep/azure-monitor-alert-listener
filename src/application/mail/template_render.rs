@@ -1,6 +1,18 @@
+use serde_json::Value;
 use tera::{Context, Tera};
 use crate::domain::models::AzureMonitorAlert;
 
+fn prettify_json_array(raw: &str) -> String {
+    let json_array: Result<Vec<Value>, _> = serde_json::from_str(raw);
+    match json_array {
+        Ok(arr) => arr
+            .iter()
+            .map(|v| serde_json::to_string_pretty(v).unwrap_or_default())
+            .collect::<Vec<_>>()
+            .join("\n\n"),
+        Err(_) => raw.to_string(),
+    }
+}
 pub fn render_alert_email(
     template_dir: &str,
     template_name: &str,
@@ -27,19 +39,13 @@ pub fn render_alert_email(
         .split('/')
         .last()
         .unwrap_or("-");
-    let pipeline_name = essentials.description.trim();
+    let default_pipeline_name = String::from("-");
+    let pipeline_name = alert.data.pipeline_name.as_ref().unwrap_or(&default_pipeline_name);
+
     let execution_time = &essentials.fired_date_time;
 
     // Error message from alertContext -> condition -> allOf -> [0].search_query (or .message)
     let mut error_message = alert.data.message.clone().unwrap_or_else(|| String::from("(no error message found)"));
-    let error_message_condition = alert_context
-        .as_ref()
-        .and_then(|ctx| ctx.condition.all_of.as_ref())
-        .and_then(|vec| vec.get(0))
-        .and_then(|cond| cond.search_query.clone())
-        .unwrap_or_else(|| String::from("(no error message found)"));
-    error_message.push_str(&error_message_condition);
-
 
     // Create Tera context
     let mut context = Context::new();
@@ -54,7 +60,8 @@ pub fn render_alert_email(
     context.insert("adf_name", adf_name);
     context.insert("pipeline_name", pipeline_name);
     context.insert("execution_time", execution_time);
-    context.insert("error_message", &error_message);
+    let formatted_error = prettify_json_array(&error_message);
+    context.insert("error_message", &formatted_error);
 
     // Render
     let html = tera.render(template_name, &context)?;

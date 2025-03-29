@@ -9,4 +9,5 @@ pub struct AppState {
     pub(crate) sender: String,
     pub(crate) reply_to: String,
     pub(crate) display_name: String,
+    pub(crate) workspace_id: String,
 }

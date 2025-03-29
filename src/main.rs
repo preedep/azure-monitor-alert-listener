@@ -20,6 +20,7 @@ async fn main() -> std::io::Result<()> {
     let sender = std::env::var("SENDER").expect("SENDER must be set");
     let reply_to = std::env::var("REPLY_EMAIL").expect("REPLY_TO must be set");
     let display_name = std::env::var("REPLY_EMAIL_DISPLAY").expect("DISPLAY_NAME must be set");
+    let workspace_id = std::env::var("WORKSPACE_ID").expect("WORKSPACE_ID must be set");
 
     let state = interface::state::AppState {
         tenant_id,
@@ -29,6 +30,7 @@ async fn main() -> std::io::Result<()> {
         sender,
         reply_to,
         display_name,
+        workspace_id,
     };
 
     let port: u16 = port.parse().unwrap();
