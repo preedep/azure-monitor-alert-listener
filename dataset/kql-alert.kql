@@ -5,12 +5,21 @@ ADFActivityRun
     | where Status == "Failed"
     | project PipelineRunId = RunId, PipelineName, PipelineStart = Start, PipelineEnd = End
 ) on PipelineRunId
-| project TimeGenerated = PipelineEnd,
-          PipelineName,
-          ActivityName,
-          FailureType,
-          Error,
-          ActivityRunStart = Start,
-          ActivityRunEnd = End,
-          PipelineStart,
-          PipelineEnd
+| project
+    PipelineRunId,
+    PipelineName,
+    PipelineStart,
+    PipelineEnd,
+    ActivityName,
+    FailureType,
+    Error,
+    ActivityRunStart = Start,
+    ActivityRunEnd = End
+// กลุ่มตาม Pipeline
+| summarize
+    TotalFailedActivities = count(),
+    FirstActivityStart = min(ActivityRunStart),
+    LastActivityEnd = max(ActivityRunEnd),
+    ErrorMessages = make_list(Error, 100)
+    by PipelineRunId, PipelineName, PipelineStart, PipelineEnd
+| extend ConcatenatedErrors = strcat_array(ErrorMessages, "\n")
