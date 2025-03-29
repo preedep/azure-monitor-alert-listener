@@ -33,14 +33,27 @@ This project was built to:
 4. (Optional) Alert content is rendered into HTML or forwarded elsewhere
 
 ```mermaid
-flowchart LR
-    A[Azure Monitor Alert]
-    B[Webhook Endpoint alert]
-    C[Parse JSON AzureMonitorAlert]
-    D[Render HTML Tera Template]
-    E[Send Email via Azure Communication Service]
+flowchart TD
+    A["1️⃣ Azure Monitor Alert (POST /alert)"] --> B["2️⃣ Handler: receive_alert()"]
+    B --> C["3️⃣ Parse JSON -> AzureMonitorAlert"]
+    C --> D{"4️⃣ Has alert_context?"}
+    D -- "No" --> E["⛔ Log 'No context' and skip"]
+    D -- "Yes" --> F["5️⃣ Call process_alert()"]
 
-    A --> B --> C --> D --> E
+    F --> G["6️⃣ Extract search_query + timespan"]
+    G --> H["7️⃣ query_log_link() → Call Log Analytics API"]
+    H --> I{"8️⃣ Query success?"}
+    I -- "No" --> J["❌ Log error, return empty"]
+    I -- "Yes" --> K["9️⃣ process_log_condition()"]
+    K --> L["🔁 Extract pipeline_name & errors"]
+    L --> M["📝 Update alert.data.pipeline_name & message"]
+
+    B --> N["10️⃣ Call render_and_send_email()"]
+    N --> O["🎨 Render Tera Template"]
+    O --> P["✉️ send_email_with_api()"]
+    P --> Q{"✅ Email sent?"}
+    Q -- "Yes" --> R["✅ Log success & return HTTP 200"]
+    Q -- "No" --> S["❌ Log error & return error"]
 ```
 
 
