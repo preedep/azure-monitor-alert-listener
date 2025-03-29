@@ -27,7 +27,9 @@ pub fn render_alert_email(
         .split('/')
         .last()
         .unwrap_or("-");
-    let pipeline_name = alert.data.pipeline_name.as_ref().unwrap_or(&String::from("-"));
+    let default_pipeline_name = String::from("-");
+    let pipeline_name = alert.data.pipeline_name.as_ref().unwrap_or(&default_pipeline_name);
+
     let execution_time = &essentials.fired_date_time;
 
     // Error message from alertContext -> condition -> allOf -> [0].search_query (or .message)
