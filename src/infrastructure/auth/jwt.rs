@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::time::{Duration, Instant};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -15,14 +15,17 @@ pub struct Claims {
     pub nbf: usize,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct JwtVerifier {
-    cache: Arc<RwLock<HashMap<String, (Instant, Vec<Jwk>)>>>,
+    #[serde(skip)]
+    cache: Arc<RwLock<HashMap<String, (u64, Vec<Jwk>)>>>, // Use timestamp instead of Instant, and skip serialization
+    #[serde(skip)] // Exclude the client from serialization/deserialization
     client: Client,
+    #[serde(with = "humantime_serde")] // Serialize/deserialize Duration using human-readable format
     ttl: Duration,
 }
 
-#[derive(Debug,Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Jwk {
     pub kid: String,
     pub n: String,
@@ -72,10 +75,11 @@ impl JwtVerifier {
 
     async fn get_jwks(&self, tenant_id: &str) -> Result<Vec<Jwk>, String> {
         let mut map = self.cache.write().await;
-        let now = Instant::now();
+        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(); // Use a Unix timestamp
 
+        // Use the Unix timestamp to compare
         if let Some((ts, jwks)) = map.get(tenant_id) {
-            if now.duration_since(*ts) < self.ttl {
+            if now - *ts < self.ttl.as_secs() {
                 return Ok(jwks.to_vec());
             }
         }
@@ -96,7 +100,7 @@ impl JwtVerifier {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Jwks {
     keys: Vec<Jwk>,
 }
