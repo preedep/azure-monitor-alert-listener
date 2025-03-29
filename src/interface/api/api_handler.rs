@@ -7,8 +7,28 @@ use crate::application::mail::template_render::render_alert_email;
 use crate::domain::models::{AlertContext, AzureMonitorAlert, LogAnalyticsResponse};
 use crate::interface::state::AppState;
 
+/// Actix handler for the `/alert` route.
 #[post("/alert")]
-pub async fn receive_alert(app_state: web::Data<AppState>, payload: web::Json<Value>) -> impl Responder {
+pub async fn receive_alert(
+    app_state: web::Data<AppState>,
+    payload: web::Json<Value>,
+) -> impl Responder {
+    handle_alert(app_state, payload).await
+}
+
+/// Actix handler for the `/alert_secure` route.
+#[post("/alert_secure")]
+pub async fn receive_alert_secure(
+    app_state: web::Data<AppState>,
+    payload: web::Json<Value>,
+) -> impl Responder {
+    handle_alert(app_state, payload).await
+}
+
+async fn handle_alert(
+    app_state: web::Data<AppState>,
+    payload: web::Json<Value>,
+) -> impl Responder {
     debug!("📦 Raw JSON Payload:\n{}", serde_json::to_string_pretty(&payload).unwrap());
 
     let mut alert = match AzureMonitorAlert::try_from(payload) {
@@ -19,7 +39,7 @@ pub async fn receive_alert(app_state: web::Data<AppState>, payload: web::Json<Va
     let app_state_ref = app_state.get_ref();
 
     if let Some(alert_context) = &alert.data.alert_context {
-        let r  = process_alert(app_state_ref, alert_context).await;
+        let r = process_alert(app_state_ref, alert_context).await;
         alert.data.pipeline_name = Some(r.0);
         alert.data.message = Some(r.1);
     } else {
@@ -33,6 +53,7 @@ pub async fn receive_alert(app_state: web::Data<AppState>, payload: web::Json<Va
 
     HttpResponse::Ok().finish()
 }
+
 
 async fn process_alert(app_state_ref: &AppState, alert_context: &AlertContext) -> (String, String) {
     if let Some(first_condition) = alert_context

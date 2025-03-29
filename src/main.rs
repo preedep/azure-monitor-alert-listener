@@ -40,6 +40,7 @@ async fn main() -> std::io::Result<()> {
                 actix_web::web::Data::new(state.clone()))
             .wrap(actix_web::middleware::Logger::default())
             .service(interface::api::api_handler::receive_alert)
+            .service(interface::api::api_handler::receive_alert_secure)
     })
     .bind(("0.0.0.0", port))?
     .run()
