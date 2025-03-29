@@ -1,5 +1,6 @@
 {
   "data": {
+    "message": "Pipeline failed runs XXXXXX for ADF",
     "alertContext": {
       "condition": {
         "allOf": [

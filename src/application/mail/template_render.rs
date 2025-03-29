@@ -31,12 +31,15 @@ pub fn render_alert_email(
     let execution_time = &essentials.fired_date_time;
 
     // Error message from alertContext -> condition -> allOf -> [0].search_query (or .message)
-    let error_message = alert_context
+    let mut error_message = alert.data.message.clone().unwrap_or_else(|| String::from("(no error message found)"));
+    let error_message_condition = alert_context
         .as_ref()
         .and_then(|ctx| ctx.condition.all_of.as_ref())
         .and_then(|vec| vec.get(0))
         .and_then(|cond| cond.search_query.clone())
         .unwrap_or_else(|| String::from("(no error message found)"));
+    error_message.push_str(&error_message_condition);
+
 
     // Create Tera context
     let mut context = Context::new();
