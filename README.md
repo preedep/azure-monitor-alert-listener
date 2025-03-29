@@ -30,7 +30,38 @@ This project was built to:
 1. Azure Monitor triggers an alert
 2. The alert is sent as an HTTP POST to this app (e.g. `http://your-server/alert`)
 3. The app parses the JSON and logs / processes it
-4. (Optional) Alert content is rendered into HTML or forwarded elsewhere
+4. Query the Azure Log Analytics API for additional context
+5. (Optional) Alert content is rendered into HTML or forwarded elsewhere
+
+## KQL Query Example
+in Azure Monitor uses the following query to get the failed activities in Azure Data Factory.
+```kql
+ADFActivityRun
+| where Status == "Failed"
+| join kind=inner (
+    ADFPipelineRun
+    | where Status == "Failed"
+    | project PipelineRunId = RunId, PipelineName, PipelineStart = Start, PipelineEnd = End
+) on PipelineRunId
+| project
+    PipelineRunId,
+    PipelineName,
+    PipelineStart,
+    PipelineEnd,
+    ActivityName,
+    FailureType,
+    Error,
+    ActivityRunStart = Start,
+    ActivityRunEnd = End
+// กลุ่มตาม Pipeline
+| summarize
+    TotalFailedActivities = count(),
+    FirstActivityStart = min(ActivityRunStart),
+    LastActivityEnd = max(ActivityRunEnd),
+    ErrorMessages = make_list(Error, 100)
+    by PipelineRunId, PipelineName, PipelineStart, PipelineEnd
+| extend ConcatenatedErrors = strcat_array(ErrorMessages, "\n")
+```
 
 ```mermaid
 flowchart TD
