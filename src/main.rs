@@ -5,6 +5,7 @@ mod infrastructure;
 
 use actix_web::HttpServer;
 use log::info;
+use crate::infrastructure::auth::jwt::JwtVerifier;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -23,6 +24,10 @@ async fn main() -> std::io::Result<()> {
     let display_name = std::env::var("REPLY_EMAIL_DISPLAY").expect("DISPLAY_NAME must be set");
     let workspace_id = std::env::var("WORKSPACE_ID").expect("WORKSPACE_ID must be set");
 
+
+    // 🔐 สร้าง verifier instance
+    let jwt_verifier = JwtVerifier::new();
+
     let state = interface::state::AppState {
         tenant_id,
         client_id,
@@ -32,6 +37,7 @@ async fn main() -> std::io::Result<()> {
         reply_to,
         display_name,
         workspace_id,
+        jwt_verifier: jwt_verifier.clone(),
     };
 
     let port: u16 = port.parse().unwrap();
